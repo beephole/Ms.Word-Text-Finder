@@ -34,18 +34,6 @@ Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H]
 ```
 
 
-Options
-
-1. -h,           --help:                 Show the help message and exit.
-2. -f FILE,      --file FILE:            File name to be used. Ex 'wordDocument' or 'wordDocument.docx'.
-3. -d DIRECTORY, --directory DIRECTORY:  Directory to search for the file (default: desktop).
-4. -t TEMPLATE,  --template TEMPLATE:    Template file name to be used. Ex 'template' or 'template.docx'.
-5. -o OUTPUT,    --output OUTPUT:        Output file name. Ex 'output' or 'output.txt'.
-6. -H,           --help-message:         Note: When setting a word as a point and the word may include a symbol without a space, such as in the string 'last name:', be                                         sure to include the symbol in your selection. For example, to obtain the index of the word 'name', you should include the                                               symbol ':' If there is a space between the word and the symbol, it is acceptable to simply select the word. Alternatively, you                                         can also split the string by the symbol. Please exercise caution when making these selections.
-7. -b,           --browse:               Open a Tk window to browse for a file.
-8. -pdf,         --pdf:                  Convert the template to a PDF file.
-
-
 
 
 ####**Examples**
