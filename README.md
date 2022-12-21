@@ -26,7 +26,11 @@ pip install -r requirements.txt
 
 
 
+
+
 ##*Usage*
+
+
 ```
 Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b] [-pdf]
 ```
@@ -35,6 +39,8 @@ Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H]
 
 
 ##**Examples**
+
+
 
 To extract text from the file 'wordDocument.docx' and save it to a text file called 'output.txt':
 
@@ -65,7 +71,10 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
 
 
 
+
 ##**Features**
+
+
 
    >1. Search for specific terms within a Microsoft Word document
    
@@ -80,12 +89,18 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
    >6. Converts a Word Template into a PDF
 
 
+
+
 ##**License**
+
 
 Copyright (c) 2022 Beephole. This software is licensed under the MIT License. See the LICENSE file for details.
 
 
+
+
 ##**Contributing**
+
 
 We welcome contributions to Text Extractor! If you have an idea for a new feature or have found a bug, 
 please open an issue or submit a pull request.
@@ -93,13 +108,17 @@ please open an issue or submit a pull request.
  
    
    
+   
 
 
 *PAY ATTENTION*
 
+
 1. Everything is saved in the working or current Directory.
 2. If -d flag is not included then the PATH of files is going to be Desktop.
 3. MAKE SURE WHEN USING FLAGS TO TYPE THE FILE NAMES CORRECTLY .
+
+
 
 
 > "I’m always doing things I can’t do. That’s how I get to do them. :+1:"
