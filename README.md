@@ -28,7 +28,7 @@ pip install -r requirements.txt
 
 
 
-##*Usage*
+###*Usage*
 
 
 ```
@@ -38,7 +38,7 @@ Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H]
 
 
 
-##**Examples**
+####**Examples**
 
 
 
@@ -72,7 +72,7 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
 
 
 
-##**Features**
+**Features**
 
 
 
@@ -91,7 +91,7 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
 
 
 
-##**License**
+**License**
 
 
 Copyright (c) 2022 Beephole. This software is licensed under the MIT License. See the LICENSE file for details.
@@ -99,7 +99,7 @@ Copyright (c) 2022 Beephole. This software is licensed under the MIT License. Se
 
 
 
-##**Contributing**
+**Contributing**
 
 
 We welcome contributions to Text Extractor! If you have an idea for a new feature or have found a bug, 
