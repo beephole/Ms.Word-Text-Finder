@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 
 
-###*Usage*
+##*Usage*
 ```
 Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b] [-pdf]
 ```
@@ -34,7 +34,7 @@ Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H]
 
 
 
-####**Examples**
+##**Examples**
 
 To extract text from the file 'wordDocument.docx' and save it to a text file called 'output.txt':
 
@@ -65,7 +65,7 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
 
 
 
-####**Features**
+##**Features**
 
    >1. Search for specific terms within a Microsoft Word document
    
@@ -80,12 +80,12 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
    >6. Converts a Word Template into a PDF
 
 
-####**License**
+##**License**
 
 Copyright (c) 2022 Beephole. This software is licensed under the MIT License. See the LICENSE file for details.
 
 
-####**Contributing**
+##**Contributing**
 
 We welcome contributions to Text Extractor! If you have an idea for a new feature or have found a bug, 
 please open an issue or submit a pull request.
