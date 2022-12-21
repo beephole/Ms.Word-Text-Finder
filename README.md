@@ -47,16 +47,19 @@ To extract text from the file 'wordDocument.docx' and save it to a text file cal
 ```
 python Ms.WordTxtFinder.py -f wordDocument.docx -o output.txt
 ```
+
 To extract text from the file 'wordDocument.docx' and save it to'output.txt' and replace Variables at WordTemplate:
 
 ```
 python Ms.WordTxtFinder.py -f wordDocument.docx -t template -o output.txt
 ```
-To open a OS Window to get the file PAT ,search for text and save it to a text file called 'output.txt':
+
+To open a OS Window to get the file PATh ,search for text and save it to a text file called 'output.txt':
 
 ```
 python Ms.WordTxtFinder.py -b -o output.txt
 ```
+
 To extract text from the file 'wordDocument.docx' replace the Variables and also convertin to PDF':
 
 ```
