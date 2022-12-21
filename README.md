@@ -26,7 +26,7 @@ pip install -r requirements.txt
 
 
 
-###**Usage**
+###*Usage*
 ```
 Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b] [-pdf]
 ```
