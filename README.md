@@ -1,8 +1,8 @@
-# Ms.Word-Text-Finder
+# Ms.Word Text Finder
 
 
 
-*Ms.Word-Text-Finder is a Python program that allows you to search for and extract specific text from a Microsoft Word document (.docx).*
+*Ms.Word Text Finder is a Python program that allows you to search for and extract specific text from a Microsoft Word document (.docx).*
 
 Simply open the file and enter a search term to search for within the document. If the term is found, the program will print the 
 paragraph containing the term and allow you to specify points within the paragraph to extract a portion of the text.
