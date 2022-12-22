@@ -25,6 +25,7 @@ pip install -r requirements.txt
 ```
 
 
+![2022-12-22 04_10_39-Select Command Prompt](https://user-images.githubusercontent.com/118709832/209099574-f885e7d9-5928-4852-ab81-8b80558a6f97.png)
 
 
 
@@ -32,7 +33,7 @@ pip install -r requirements.txt
 
 
 ```
-Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b]  [-i INPUT] [ -s SCANN] [-pdf]
+Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b]  [-i INPUT] [--bold] [ -s SCANN] [-pdf]
 ```
 
 
@@ -79,7 +80,6 @@ python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt
 
 
 
-![2022-12-22 00_04_41-Command Prompt](https://user-images.githubusercontent.com/118709832/209061064-dde685ab-eb37-4d5d-858e-792f16861432.png)
 
  
 
@@ -104,6 +104,10 @@ python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt
    >7. Input list of variables and values and does the swaping and PDF converting
    
    >8. Scann a Word Template for all variables and outputs them in a .txt
+   
+   >9. It can go through tables in a word Doc and replace the Text.
+   
+   >10. Option to make the Values Bold text.
 
 
 
