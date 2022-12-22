@@ -32,7 +32,7 @@ pip install -r requirements.txt
 
 
 ```
-Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b] [-pdf]
+Ms.WordTxtFinder.py [-h] [-f FILE] [-d DIRECTORY] [-t TEMPLATE] [-o OUTPUT] [-H] [-b]  [-i INPUT] [ -s SCANN] [-pdf]
 ```
 
 
@@ -66,12 +66,22 @@ To extract text from the file 'wordDocument.docx' replace the Variables and also
 python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
 ```
 
+To pass a file with Keys and Values to a word Template and convertin to PDF':
+
+```
+python Ms.WordTxtFinder.py -i inputfile.txt  -t wordTemplate -pdf
+```
+To scann a word Template and Output the result for later use':
+
+```
+python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt 
+```
 
 
 
-    
-![Command Prompt-tool](https://user-images.githubusercontent.com/118709832/208887256-8098754d-dc99-4c2e-a550-cb38de2d18d4.png)
+![2022-12-22 00_04_41-Command Prompt](https://user-images.githubusercontent.com/118709832/209061064-dde685ab-eb37-4d5d-858e-792f16861432.png)
 
+ 
 
 
 
@@ -90,6 +100,10 @@ python Ms.WordTxtFinder.py -f wordDocument.docx -t wordTemplate -pdf
    >5. Customize the output file 
 
    >6. Converts a Word Template into a PDF
+   
+   >7.Input list of variables and values and does the swaping and PDF converting
+   
+   >8.Scann a Word Template for all variables and outputs them in a .txt
 
 
 
@@ -105,7 +119,7 @@ Copyright (c) 2022 Beephole. This software is licensed under the MIT License. Se
 #### **Contributing**
 
 
-We welcome contributions to Text Extractor! If you have an idea for a new feature or have found a bug, 
+We welcome contributions to Ms.Word Text Finder! If you have an idea for a new feature or have found a bug, 
 please open an issue or submit a pull request.
 
  
@@ -120,6 +134,7 @@ please open an issue or submit a pull request.
 1. Everything is saved in the working or current Directory.
 2. If -d flag is not included then the PATH of files is going to be Desktop.
 3. MAKE SURE WHEN USING FLAGS TO TYPE THE FILE NAMES CORRECTLY .
+4. MAKE SURE TO CLOSE THE WORD DOCUMENT THAT YOU ARE TRYING TO USE WITH THE TOOL
 
 
 
