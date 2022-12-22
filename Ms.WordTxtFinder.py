@@ -449,7 +449,7 @@ if args.template:
 
     except Exception:
         print("Error: Invalid file path")
-template_document = template_file_variable
+
 
 if args.input:
     results1 = {}
