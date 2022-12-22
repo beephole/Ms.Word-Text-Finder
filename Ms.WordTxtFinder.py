@@ -4,7 +4,7 @@ import tkinter as tk
 from tkinter import filedialog
 import docx2pdf
 
-# Define the ASCII art template
+
 template = """
 ___  ___         _    _                   _   _____        _____  ______  _             _             
 |  \/  |        | |  | |                 | | |_   _|      |_   _| |  ___|(_)           | |            
@@ -18,7 +18,7 @@ This software is licensed under the MIT License. See the LICENSE file for detail
 print(template, end="\n")
 
 parser = argparse.ArgumentParser(
-    description="Text Extractor is a Python program that allows users to search for and extract specific text from a Microsoft Word document (.docx). Once the file is open, you can enter a search term to search for within the document. If the term is found, the program will print the paragraph containing the term and allow you to specify points within the paragraph to extract a portion of the text. The extracted text can be saved as a variable and written to a text file."
+    description="Ms.Word Text Finder is a Python program that allows users to search for and extract specific text from a Microsoft Word document (.docx). Once the file is open, you can enter a search term to search for within the document. If the term is found, the program will print the paragraph containing the term and allow you to specify points within the paragraph to extract a portion of the text. The extracted text can be saved as a variable and written to a text file."
 )
 parser.add_argument(
     "-f",
@@ -39,6 +39,14 @@ parser.add_argument(
     help="directory to search for the file (default: desktop)",
 )
 parser.add_argument(
+    "-s",
+    "--scann",
+    nargs="?",
+    const=True,
+    default=False,
+    help="Scan the template for variables",
+)
+parser.add_argument(
     "-t",
     "--template",
     required=False,
@@ -51,10 +59,16 @@ parser.add_argument(
     help="output file name. Ex 'output' or 'output.txt'",
 )
 parser.add_argument(
+    "-i",
+    "--input",
+    required=False,
+    help="input file name to be used Ex 'inputfile' or 'inputfile.txt'",
+)
+parser.add_argument(
     "-H",
     "--help-message",
     action="help",
-    help="Note: When setting a word as a point and the word may include a symbol without a space, such as in the string 'last name:', be sure to include the symbol in your selection. For example, to obtain the index of the word 'name', you should include the symbol ':'  If there is a space between the word and the symbol, it is acceptable to simply select the word. Alternatively, you can also split the string by the symbol. Please exercise caution when making these selections.",
+    help="Note: When setting a word as a point and the word may include a symbol without a space, such as in the string 'last name:', be sure to include the symbol in your selection. For example, to obtain the index of the word 'name', you should include the symbol ':'  If there is a space between the word and the symbol, it is acceptable to simply select the word. Alternatively, you can also split the string by the symbol. Please exercise caution when making these selectionsAND CLOSE THE CURRENTS WORD DOCUMENT WHEN WORKING WITH IT ",
 )
 parser.add_argument(
     "-b",
@@ -75,6 +89,7 @@ template_filename = args.template
 output_filename = args.output
 browser_tk = args.browse
 conver_pdf = args.pdf
+input_var = args.input
 i = 0
 
 results = {}
@@ -84,7 +99,7 @@ def search_text():
     while True:
         print("\n")
         new_search = input("Enter the Text that You want to search in the Document: ")
-        if new_search:  # if new_search is not an empty string
+        if new_search:
             print("\n")
             return new_search
         else:
@@ -356,11 +371,39 @@ if args.browse:
     # Open a Tk window to browse for a file
     root = tk.Tk()
     root.withdraw()  # Hide the Tk window
-    file_path = filedialog.askopenfilename()
-    filename = file_path.split("/")[-1]  # Extract the file name from the file path
-else:
+    browsefile_path = filedialog.askopenfilename()
+    browsefilename = browsefile_path.split("/")[
+        -1
+    ]  # Extract the file name from the file path
+
+    if not browsefilename.endswith(".docx"):
+        browsefilename += ".docx"
+    for root, dirs, files in os.walk(search_directory):
+        if browsefilename in files:
+            fbrowseile_path = os.path.join(root, browsefilename)
+            browsefile_path = os.path.join(root, browsefilename)
+            browsefile_variable = browsefile_path
+            break
+    else:
+        print(
+            f"Error: {filename} was not found in directory on the specified{search_directory}"
+        )
+        print("Check the filename or check the path if it's written correctly ! ")
+        print("Exiting ...")
+        sys.exit()
+    document_name = browsefile_variable
+    try:
+        print(document_name, end="\n")
+        document = docx.Document(document_name)
+        print("\n")
+    except Exception:
+        print("Error: Invalid file path")
+
+
+if args.file:
     if not filename.endswith(".docx"):
         filename += ".docx"
+
     for root, dirs, files in os.walk(search_directory):
         if filename in files:
             file_path = os.path.join(root, filename)
@@ -372,28 +415,14 @@ else:
         )
         print("Check the filename or check the path if it's written correctly ! ")
         print("Exiting ...")
-
-if not filename.endswith(".docx"):
-    filename += ".docx"
-for root, dirs, files in os.walk(search_directory):
-    if filename in files:
-        file_path = os.path.join(root, filename)
-        file_variable = file_path
-        break
-else:
-    print(
-        f"Error: {filename} was not found in directory on the specified{search_directory}"
-    )
-    print("Check the filename or check the path if it's written correctly ! ")
-    print("Exiting ...")
-    sys.exit()
-document_name = file_variable
-try:
-    print(document_name, end="\n")
-    document = docx.Document(document_name)
-    print("\n")
-except Exception:
-    print("Error: Invalid file path")
+        sys.exit()
+    document_name = file_variable
+    try:
+        print(document_name, end="\n")
+        document = docx.Document(document_name)
+        print("\n")
+    except Exception:
+        print("Error: Invalid file path")
 
 
 if args.template:
@@ -420,16 +449,60 @@ if args.template:
 
     except Exception:
         print("Error: Invalid file path")
+template_document = template_file_variable
+
+if args.input:
+    results1 = {}
+    if not input_var.endswith(".txt"):
+        input_var += ".txt"
+    for root, dirs, files in os.walk(search_directory):
+        if input_var in files:
+            input_file_path = os.path.join(root, input_var)
+            input_file_variable = input_file_path
+            break
+    else:
+        print(
+            f"Error: {input_var} was not found in directory on the specified {search_directory}"
+        )
+        print("Check the filename or check the path if it's written correctly ! ")
+        print("Exiting ...")
+        sys.exit()
+
+    input_document = input_file_variable
+    try:
+        print(input_document, end="\n")
+
+    except Exception:
+        print("Error: Invalid file path")
+
+    with open(input_document, "r") as f:
+        contents = f.read()
+
+    for line in contents.split("\n"):
+        key_value = line.split(": ")  # Split the line into a list
+        if len(key_value) == 2:  # Check if the list has two elements
+            key, value = key_value  # Unpack the list into key and value
+            key = key.strip("['']")
+
+            template = re.sub(f"{{{key}}}", value, template)
+            results1[key] = value  # Add key-value pair to the dictionary
+        else:
+            # Handle the case where the line does not contain a colon
+            print(f"There is a line in your file that looks like this : {line}")
+
 
 while True:
     try:
-        num_vars = int(input("Enter the number of variables you want to create: "))
+        num_vars = int(
+            input(
+                "Enter the number of variables you want to create (enter 0 if none/skipp): "
+            )
+        )
         print("\n")
         break
     except ValueError:
         print("Invalid input. Please enter a Number. (0-9)")
         print("\n")
-
 
 for i in range(num_vars):
     variable_name = ""
@@ -452,8 +525,23 @@ for i in range(num_vars):
 print(results)
 
 
+def scann_variables(template_file):
+    doc = docx.Document(template_file)
+
+    variables = []
+    for paragraph in doc.paragraphs:
+        text = "".join(run.text for run in paragraph.runs)
+        while "{{" in text and "}}" in text:
+            start_index = text.index("{{")
+            end_index = text.index("}}") + 2
+            variable_name = text[start_index + 2 : end_index - 2]
+            variables.append(variable_name)
+            text = text[end_index:]
+    return variables
+
+
 if args.output:
-    if not output_filename.endswith(".txt"):  # i can put docx. to reuse it with -f flag
+    if not output_filename.endswith(".txt"):
         output_filename += ".txt"
     with open(output_filename, "w") as f:
         for key, value in results.items():
@@ -464,6 +552,20 @@ if args.output:
 else:
     for key, value in results.items():
         print(f"{key}: {value}")
+
+if args.scann:
+    scanned_var = scann_variables(template_document)
+
+    if args.output:
+        if not output_filename.endswith(".txt"):
+            output_filename += ".txt"
+
+        with open(output_filename, "w") as f:
+            for variable in scanned_var:
+                f.write(f"{variable}\n")
+            print("\n")
+            print(f"Your Output file is successfully created !")
+            print("\n")
 
 
 def replace_variables(template_file, results):
@@ -490,17 +592,30 @@ def replace_variables(template_file, results):
 
 
 if args.template:
-    modified_template = replace_variables(template_document, results)
+    if args.input:
+        modified_template1 = replace_variables(template_document, results1)
 
-    print(f"Your Word Template  is successfully created!")
-    print("\n")
+        print(f"Your Word Template  is successfully created!")
+        print("\n")
+    else:
+        modified_template = replace_variables(template_document, results)
+
+        print(f"Your Word Template  is successfully created!")
+        print("\n")
 if args.pdf:
-    # Generate a unique name for the PDF file
-    pdf_file = f"modified_template_{os.getpid()}.pdf"
+    if args.input:
+        pdf_file1 = f"modified_template_{os.getpid()}.pdf"
+        docx2pdf.convert(modified_template1, output_path=pdf_file1)
 
-    # Convert the modified Word template to a PDF file
-    docx2pdf.convert(modified_template, output_path=pdf_file)
-    print("\n")
-    print(f" Your PDF file is successfully created !")
-    print("\n")
-    print("""¯\_( ͠❛ ͜ʖ ͠❛ )_/¯""")
+        print(f"Your Word Template  is successfully created!")
+        print("\n")
+
+    else:
+        pdf_file = f"modified_template_{os.getpid()}.pdf"
+        docx2pdf.convert(modified_template, output_path=pdf_file)
+        print("\n")
+        print(f" Your PDF file is successfully created !")
+        print("\n")
+
+
+print("""¯\_( ͠❛ ͜ʖ ͠❛ )_/¯""")
