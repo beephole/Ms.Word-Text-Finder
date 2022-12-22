@@ -101,9 +101,9 @@ python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt
 
    >6. Converts a Word Template into a PDF
    
-   >7.Input list of variables and values and does the swaping and PDF converting
+   >7. Input list of variables and values and does the swaping and PDF converting
    
-   >8.Scann a Word Template for all variables and outputs them in a .txt
+   >8. Scann a Word Template for all variables and outputs them in a .txt
 
 
 
