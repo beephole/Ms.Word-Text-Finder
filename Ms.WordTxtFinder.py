@@ -76,6 +76,8 @@ parser.add_argument(
     action="store_true",
     help="Open a Tk window to browse for a file",
 )
+parser.add_argument("--bold", action="store_true", help="make the replaced text bold")
+
 parser.add_argument(
     "-pdf", "--pdf", action="store_true", help="Convert the template to a PDF file"
 )
@@ -90,6 +92,7 @@ output_filename = args.output
 browser_tk = args.browse
 conver_pdf = args.pdf
 input_var = args.input
+bold = args.bold
 i = 0
 
 results = {}
@@ -380,7 +383,7 @@ if args.browse:
         browsefilename += ".docx"
     for root, dirs, files in os.walk(search_directory):
         if browsefilename in files:
-            fbrowseile_path = os.path.join(root, browsefilename)
+            browseile_path = os.path.join(root, browsefilename)
             browsefile_path = os.path.join(root, browsefilename)
             browsefile_variable = browsefile_path
             break
@@ -537,6 +540,17 @@ def scann_variables(template_file):
             variable_name = text[start_index + 2 : end_index - 2]
             variables.append(variable_name)
             text = text[end_index:]
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    text = "".join(run.text for run in paragraph.runs)
+                    while "{{" in text and "}}" in text:
+                        start_index = text.index("{{")
+                        end_index = text.index("}}") + 2
+                        variable_name = text[start_index + 2 : end_index - 2]
+                        variables.append(variable_name)
+                        text = text[end_index:]
     return variables
 
 
@@ -568,20 +582,48 @@ if args.scann:
             print("\n")
 
 
-def replace_variables(template_file, results):
+import argparse
+
+
+def replace_variables(template_file, results, bold):
     variables = list(results.keys())
 
     doc = docx.Document(template_file)
 
     for paragraph in doc.paragraphs:
-        words = paragraph.text.split()
-        for i, word in enumerate(words):
-            if word.startswith("{{") and word.endswith("}}"):
-                variable_name = word[2:-2]
+        for run in paragraph.runs:
+            if "{{" in run.text and "}}" in run.text:
+                start_index = run.text.index("{{")
+                end_index = run.text.index("}}") + 2
+                variable_name = run.text[start_index + 2 : end_index - 2]
                 if variable_name in variables:
-                    words[i] = str(results[variable_name]).strip("[']")
+                    run.text = (
+                        run.text[:start_index]
+                        + str(results[variable_name]).strip("[']")
+                        + run.text[end_index:]
+                    )
+                    # Set the font to be bold if the --bold flag is specified
+                    if bold:
+                        run.font.bold = True
 
-        paragraph.text = " ".join(words)
+    for table in doc.tables:
+        for row in table.rows:
+            for cell in row.cells:
+                for paragraph in cell.paragraphs:
+                    for run in paragraph.runs:
+                        if "{{" in run.text and "}}" in run.text:
+                            start_index = run.text.index("{{")
+                            end_index = run.text.index("}}") + 2
+                            variable_name = run.text[start_index + 2 : end_index - 2]
+                            if variable_name in variables:
+                                run.text = (
+                                    run.text[:start_index]
+                                    + str(results[variable_name]).strip("[']")
+                                    + run.text[end_index:]
+                                )
+                                # Set the font to be bold if the --bold flag is specified
+                                if bold:
+                                    run.font.bold = True
 
     modified_template = os.path.join(
         os.getcwd(), "modified_template_{}.docx".format(os.getpid())
@@ -593,12 +635,12 @@ def replace_variables(template_file, results):
 
 if args.template:
     if args.input:
-        modified_template1 = replace_variables(template_document, results1)
+        modified_template1 = replace_variables(template_document, results1, bold)
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
     else:
-        modified_template = replace_variables(template_document, results)
+        modified_template = replace_variables(template_document, results, bold)
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
