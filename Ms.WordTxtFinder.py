@@ -82,6 +82,7 @@ parser.add_argument(
     "-pdf", "--pdf", action="store_true", help="Convert the template to a PDF file"
 )
 
+
 args = parser.parse_args()
 
 
@@ -371,13 +372,13 @@ def is_valid_variable_name(name):
 
 
 if args.browse:
-    # Open a Tk window to browse for a file
+    
     root = tk.Tk()
-    root.withdraw()  # Hide the Tk window
+    root.withdraw() 
     browsefile_path = filedialog.askopenfilename()
     browsefilename = browsefile_path.split("/")[
         -1
-    ]  # Extract the file name from the file path
+    ] 
 
     if not browsefilename.endswith(".docx"):
         browsefilename += ".docx"
@@ -428,32 +429,6 @@ if args.file:
         print("Error: Invalid file path")
 
 
-if args.template:
-    if not template_filename.endswith(".docx"):
-        template_filename += ".docx"
-    for root, dirs, files in os.walk(search_directory):
-        if template_filename in files:
-            template_file_path = os.path.join(root, template_filename)
-            template_file_variable = template_file_path
-            break
-    else:
-        print(
-            f"Error: {template_filename} was not found in directory on the specified {search_directory}"
-        )
-        print("Check the filename or check the path if it's written correctly ! ")
-        print("Exiting ...")
-        sys.exit()
-
-    template_document = template_file_variable
-    try:
-        print(template_document, end="\n")
-        document1 = docx.Document(template_document)
-        print("\n")
-
-    except Exception:
-        print("Error: Invalid file path")
-
-
 if args.input:
     results1 = {}
     if not input_var.endswith(".txt"):
@@ -482,15 +457,15 @@ if args.input:
         contents = f.read()
 
     for line in contents.split("\n"):
-        key_value = line.split(": ")  # Split the line into a list
-        if len(key_value) == 2:  # Check if the list has two elements
-            key, value = key_value  # Unpack the list into key and value
+        key_value = line.split(": ") 
+        if len(key_value) == 2:  
+            key, value = key_value  
             key = key.strip("['']")
 
             template = re.sub(f"{{{key}}}", value, template)
-            results1[key] = value  # Add key-value pair to the dictionary
+            results1[key] = value  
         else:
-            # Handle the case where the line does not contain a colon
+            
             print(f"There is a line in your file that looks like this : {line}")
 
 
@@ -567,23 +542,6 @@ else:
     for key, value in results.items():
         print(f"{key}: {value}")
 
-if args.scann:
-    scanned_var = scann_variables(template_document)
-
-    if args.output:
-        if not output_filename.endswith(".txt"):
-            output_filename += ".txt"
-
-        with open(output_filename, "w") as f:
-            for variable in scanned_var:
-                f.write(f"{variable}\n")
-            print("\n")
-            print(f"Your Output file is successfully created !")
-            print("\n")
-
-
-import argparse
-
 
 def replace_variables(template_file, results, bold):
     variables = list(results.keys())
@@ -602,7 +560,7 @@ def replace_variables(template_file, results, bold):
                         + str(results[variable_name]).strip("[']")
                         + run.text[end_index:]
                     )
-                    # Set the font to be bold if the --bold flag is specified
+                   
                     if bold:
                         run.font.bold = True
 
@@ -621,7 +579,7 @@ def replace_variables(template_file, results, bold):
                                     + str(results[variable_name]).strip("[']")
                                     + run.text[end_index:]
                                 )
-                                # Set the font to be bold if the --bold flag is specified
+                                
                                 if bold:
                                     run.font.bold = True
 
@@ -634,24 +592,63 @@ def replace_variables(template_file, results, bold):
 
 
 if args.template:
+    if not template_filename.endswith(".docx"):
+        template_filename += ".docx"
+    for root, dirs, files in os.walk(search_directory):
+        if template_filename in files:
+            template_file_path = os.path.join(root, template_filename)
+            template_file_variable = template_file_path
+            break
+    else:
+        print(
+            f"Error: {template_filename} was not found in directory on the specified {search_directory}"
+        )
+        print("Check the filename or check the path if it's written correctly ! ")
+        print("Exiting ...")
+        sys.exit()
+
+    template_document = template_file_variable
+    try:
+        print(template_document, end="\n")
+        document = docx.Document(template_document)
+        print("\n")
+    except Exception:
+        print("Error: Invalid file path")
     if args.input:
-        modified_template1 = replace_variables(template_document, results1, bold)
+        modified_template = replace_variables(template_document, results1, bold)
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
+        
+
     else:
         modified_template = replace_variables(template_document, results, bold)
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
+
+if args.scann:
+    scanned_var = scann_variables(template_document)
+
+    if args.output:
+        if not output_filename.endswith(".txt"):
+            output_filename += ".txt"
+
+        with open(output_filename, "w") as f:
+            for variable in scanned_var:
+                f.write(f"{variable}: ['']\n")
+            print("\n")
+            print(f"Your Output file is successfully created !")
+            print("\n")
+
 if args.pdf:
     if args.input:
-        pdf_file1 = f"modified_template_{os.getpid()}.pdf"
-        docx2pdf.convert(modified_template1, output_path=pdf_file1)
+        pdf_file = f"modified_template_{os.getpid()}.pdf"
+        docx2pdf.convert(modified_template, output_path=pdf_file)
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
-
+ 
     else:
         pdf_file = f"modified_template_{os.getpid()}.pdf"
         docx2pdf.convert(modified_template, output_path=pdf_file)
