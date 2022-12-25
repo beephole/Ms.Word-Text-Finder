@@ -47,7 +47,11 @@ parser.add_argument(
     default=False,
     help="Scan the template for variables",
 )
-parser.add_argument("--excel", action="store_true", help="make the replaced text bold")
+parser.add_argument(
+    "--excel",
+    action="store_true",
+    help="Use --excel whenever the document specified under -t is excel , either for scanning -s it or filling it -i",
+)
 parser.add_argument(
     "-t",
     "--template",
@@ -78,7 +82,7 @@ parser.add_argument(
     action="store_true",
     help="Open a Tk window to browse for a file",
 )
-parser.add_argument("--bold", action="store_true", help="make the replaced text bold")
+parser.add_argument("--bold", action="store_true", help="Make the replaced text bold")
 
 parser.add_argument(
     "-pdf", "--pdf", action="store_true", help="Convert the template to a PDF file"
@@ -502,7 +506,8 @@ for i in range(num_vars):
         )
 
 
-print(results)
+if results:
+    print(results)
 
 
 def scann_variables(template_file, file_type):
@@ -584,7 +589,6 @@ def replace_variables(template_file, results, bold, file_type):
                             + str(results[variable_name]).strip("[']")
                             + run.text[end_index:]
                         )
-                        # Set the font to be bold if the --bold flag is specified
                         if bold:
                             run.font.bold = True
 
@@ -605,7 +609,6 @@ def replace_variables(template_file, results, bold, file_type):
                                         + str(results[variable_name]).strip("[']")
                                         + run.text[end_index:]
                                     )
-                                    # Set the font to be bold if the --bold flag is specified
                                     if bold:
                                         run.font.bold = True
 
@@ -631,13 +634,13 @@ def replace_variables(template_file, results, bold, file_type):
                                     + c.value[end_index:]
                                 )
                                 if bold:
-                                    c.font = c.font.copy(bold=True)
-        # Save the modified workbook
+                                    font = c.font.copy()
+                                    font.bold = True
+                                    c.font = font
         modified_template = os.path.join(
             os.getcwd(), "modified_template_{}.xlsx".format(os.getpid())
         )
         doc.save(modified_template)
-    return modified_template
 
 
 if args.template:
@@ -661,12 +664,22 @@ if args.template:
         sys.exit()
 
     template_document = template_file_variable
-    try:
-        print(template_document, end="\n")
-        document = docx.Document(template_document)
-        print("\n")
-    except Exception:
-        print("Error: Invalid file path")
+    if template_document.endswith(".docx"):
+        try:
+            print(template_document, end="\n")
+            document = docx.Document(template_document)
+            print("\n")
+        except Exception:
+            print("Error: Invalid file path")
+    elif template_document.endswith(".xlsx"):
+        try:
+            print(template_document, end="\n")
+            document = openpyxl.load_workbook(template_document)
+            print("\n")
+        except Exception:
+            print("Error: Invalid file path")
+    else:
+        print("Error: Unsupported file type")
     if args.input:
         if args.excel:
             modified_template = replace_variables(
@@ -678,7 +691,8 @@ if args.template:
             )
             print(f"Your Word Template  is successfully created!")
             print("\n")
-
+    elif args.excel:
+        modified_template = replace_variables(template_document, results, bold, "excel")
     else:
         modified_template = replace_variables(template_document, results, bold, "word")
 
@@ -709,12 +723,12 @@ if args.pdf:
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
-
     else:
         pdf_file = f"modified_template_{os.getpid()}.pdf"
         docx2pdf.convert(modified_template, output_path=pdf_file)
         print("\n")
         print(f" Your PDF file is successfully created !")
         print("\n")
+
 
 print("""¯\_( ͠❛ ͜ʖ ͠❛ )_/¯""")
