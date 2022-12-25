@@ -77,9 +77,17 @@ To scann a word Template and Output the result for later use':
 ```
 python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt 
 ```
+To import a list of values to replace a Excel template and make the variables bold':
 
+```
+python Ms.WordTxtFinder.py -i results.txt -t exeltemplate --excel --bold
+```
+To scann a excel Template and Output the result for later use':
 
+```
+python Ms.WordTxtFinder.py -s -t exeltemplate -o output.txt --excel
 
+```
 
  
 
@@ -108,6 +116,8 @@ python Ms.WordTxtFinder.py -s -t template.docx  -o output.txt
    >9. It can go through tables in a word Doc and replace the Text.
    
    >10. Option to make the Values Bold text.
+
+   >11. Scan Excel templates for variables for later use and replace variable also with -i input.txt with values in
 
 
 
