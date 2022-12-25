@@ -3,6 +3,7 @@ from docx import Document
 import tkinter as tk
 from tkinter import filedialog
 import docx2pdf
+import openpyxl
 
 
 template = """
@@ -46,6 +47,7 @@ parser.add_argument(
     default=False,
     help="Scan the template for variables",
 )
+parser.add_argument("--excel", action="store_true", help="make the replaced text bold")
 parser.add_argument(
     "-t",
     "--template",
@@ -94,6 +96,7 @@ browser_tk = args.browse
 conver_pdf = args.pdf
 input_var = args.input
 bold = args.bold
+excel = args.excel
 i = 0
 
 results = {}
@@ -372,13 +375,13 @@ def is_valid_variable_name(name):
 
 
 if args.browse:
-    
+    # Open a Tk window to browse for a file
     root = tk.Tk()
-    root.withdraw() 
+    root.withdraw()  # Hide the Tk window
     browsefile_path = filedialog.askopenfilename()
     browsefilename = browsefile_path.split("/")[
         -1
-    ] 
+    ]  # Extract the file name from the file path
 
     if not browsefilename.endswith(".docx"):
         browsefilename += ".docx"
@@ -457,15 +460,14 @@ if args.input:
         contents = f.read()
 
     for line in contents.split("\n"):
-        key_value = line.split(": ") 
-        if len(key_value) == 2:  
-            key, value = key_value  
+        key_value = line.split(": ")
+        if len(key_value) == 2:
+            key, value = key_value
             key = key.strip("['']")
 
             template = re.sub(f"{{{key}}}", value, template)
-            results1[key] = value  
+            results1[key] = value
         else:
-            
             print(f"There is a line in your file that looks like this : {line}")
 
 
@@ -503,30 +505,51 @@ for i in range(num_vars):
 print(results)
 
 
-def scann_variables(template_file):
-    doc = docx.Document(template_file)
+def scann_variables(template_file, file_type):
+    if file_type == "word":
+        doc = docx.Document(template_file)
 
-    variables = []
-    for paragraph in doc.paragraphs:
-        text = "".join(run.text for run in paragraph.runs)
-        while "{{" in text and "}}" in text:
-            start_index = text.index("{{")
-            end_index = text.index("}}") + 2
-            variable_name = text[start_index + 2 : end_index - 2]
-            variables.append(variable_name)
-            text = text[end_index:]
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    text = "".join(run.text for run in paragraph.runs)
-                    while "{{" in text and "}}" in text:
-                        start_index = text.index("{{")
-                        end_index = text.index("}}") + 2
-                        variable_name = text[start_index + 2 : end_index - 2]
+        variables = []
+        for paragraph in doc.paragraphs:
+            text = "".join(run.text for run in paragraph.runs)
+            while "{{" in text and "}}" in text:
+                start_index = text.index("{{")
+                end_index = text.index("}}") + 2
+                variable_name = text[start_index + 2 : end_index - 2]
+                variables.append(variable_name)
+                text = text[end_index:]
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        text = "".join(run.text for run in paragraph.runs)
+                        while "{{" in text and "}}" in text:
+                            start_index = text.index("{{")
+                            end_index = text.index("}}") + 2
+                            variable_name = text[start_index + 2 : end_index - 2]
+                            variables.append(variable_name)
+                            text = text[end_index:]
+        return variables
+    elif file_type == "excel":
+        # Load the Excel workbook
+        workbook = openpyxl.load_workbook(template_file)
+
+        variables = []
+        # Iterate through all sheets in the workbook
+        for sheet in workbook:
+            # Iterate through all cells in the sheet
+            for row in sheet.iter_rows():
+                for cell in row:
+                    # Check if the cell value contains the variable syntax
+                    if "{{" in str(cell.value) and "}}" in str(cell.value):
+                        # Extract the variable name
+                        start_index = str(cell.value).index("{{")
+                        end_index = str(cell.value).index("}}") + 2
+                        variable_name = str(cell.value)[start_index + 2 : end_index - 2]
                         variables.append(variable_name)
-                        text = text[end_index:]
-    return variables
+        return variables
+    else:
+        raise ValueError("Invalid file type")
 
 
 if args.output:
@@ -543,57 +566,87 @@ else:
         print(f"{key}: {value}")
 
 
-def replace_variables(template_file, results, bold):
+def replace_variables(template_file, results, bold, file_type):
     variables = list(results.keys())
+    if file_type == "word":
 
-    doc = docx.Document(template_file)
+        doc = docx.Document(template_file)
 
-    for paragraph in doc.paragraphs:
-        for run in paragraph.runs:
-            if "{{" in run.text and "}}" in run.text:
-                start_index = run.text.index("{{")
-                end_index = run.text.index("}}") + 2
-                variable_name = run.text[start_index + 2 : end_index - 2]
-                if variable_name in variables:
-                    run.text = (
-                        run.text[:start_index]
-                        + str(results[variable_name]).strip("[']")
-                        + run.text[end_index:]
-                    )
-                   
-                    if bold:
-                        run.font.bold = True
+        for paragraph in doc.paragraphs:
+            for run in paragraph.runs:
+                if "{{" in run.text and "}}" in run.text:
+                    start_index = run.text.index("{{")
+                    end_index = run.text.index("}}") + 2
+                    variable_name = run.text[start_index + 2 : end_index - 2]
+                    if variable_name in variables:
+                        run.text = (
+                            run.text[:start_index]
+                            + str(results[variable_name]).strip("[']")
+                            + run.text[end_index:]
+                        )
+                        # Set the font to be bold if the --bold flag is specified
+                        if bold:
+                            run.font.bold = True
 
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    for run in paragraph.runs:
-                        if "{{" in run.text and "}}" in run.text:
-                            start_index = run.text.index("{{")
-                            end_index = run.text.index("}}") + 2
-                            variable_name = run.text[start_index + 2 : end_index - 2]
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for paragraph in cell.paragraphs:
+                        for run in paragraph.runs:
+                            if "{{" in run.text and "}}" in run.text:
+                                start_index = run.text.index("{{")
+                                end_index = run.text.index("}}") + 2
+                                variable_name = run.text[
+                                    start_index + 2 : end_index - 2
+                                ]
+                                if variable_name in variables:
+                                    run.text = (
+                                        run.text[:start_index]
+                                        + str(results[variable_name]).strip("[']")
+                                        + run.text[end_index:]
+                                    )
+                                    # Set the font to be bold if the --bold flag is specified
+                                    if bold:
+                                        run.font.bold = True
+
+        modified_template = os.path.join(
+            os.getcwd(), "modified_template_{}.docx".format(os.getpid())
+        )
+
+        doc.save(modified_template)
+    elif file_type == "excel":
+        doc = openpyxl.load_workbook(template_file)
+        for sheet in doc.worksheets:
+            for cell in sheet.iter_rows():
+                for c in cell:
+                    if c.value is not None:
+                        if "{{" in c.value and "}}" in c.value:
+                            start_index = c.value.index("{{")
+                            end_index = c.value.index("}}") + 2
+                            variable_name = c.value[start_index + 2 : end_index - 2]
                             if variable_name in variables:
-                                run.text = (
-                                    run.text[:start_index]
+                                c.value = (
+                                    c.value[:start_index]
                                     + str(results[variable_name]).strip("[']")
-                                    + run.text[end_index:]
+                                    + c.value[end_index:]
                                 )
-                                
                                 if bold:
-                                    run.font.bold = True
-
-    modified_template = os.path.join(
-        os.getcwd(), "modified_template_{}.docx".format(os.getpid())
-    )
-
-    doc.save(modified_template)
+                                    c.font = c.font.copy(bold=True)
+        # Save the modified workbook
+        modified_template = os.path.join(
+            os.getcwd(), "modified_template_{}.xlsx".format(os.getpid())
+        )
+        doc.save(modified_template)
     return modified_template
 
 
 if args.template:
-    if not template_filename.endswith(".docx"):
-        template_filename += ".docx"
+    if args.excel:
+        if not template_filename.endswith(".xlsx"):
+            template_filename += ".xlsx"
+    else:
+        if not template_filename.endswith(".docx"):
+            template_filename += ".docx"
     for root, dirs, files in os.walk(search_directory):
         if template_filename in files:
             template_file_path = os.path.join(root, template_filename)
@@ -615,20 +668,28 @@ if args.template:
     except Exception:
         print("Error: Invalid file path")
     if args.input:
-        modified_template = replace_variables(template_document, results1, bold)
-
-        print(f"Your Word Template  is successfully created!")
-        print("\n")
-        
+        if args.excel:
+            modified_template = replace_variables(
+                template_document, results1, bold, "excel"
+            )
+        else:
+            modified_template = replace_variables(
+                template_document, results1, bold, "word"
+            )
+            print(f"Your Word Template  is successfully created!")
+            print("\n")
 
     else:
-        modified_template = replace_variables(template_document, results, bold)
+        modified_template = replace_variables(template_document, results, bold, "word")
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
 
 if args.scann:
-    scanned_var = scann_variables(template_document)
+    if args.excel:
+        scanned_var = scann_variables(template_document, "excel")
+    else:
+        scanned_var = scann_variables(template_document, "word")
 
     if args.output:
         if not output_filename.endswith(".txt"):
@@ -648,13 +709,12 @@ if args.pdf:
 
         print(f"Your Word Template  is successfully created!")
         print("\n")
- 
+
     else:
         pdf_file = f"modified_template_{os.getpid()}.pdf"
         docx2pdf.convert(modified_template, output_path=pdf_file)
         print("\n")
         print(f" Your PDF file is successfully created !")
         print("\n")
-
 
 print("""¯\_( ͠❛ ͜ʖ ͠❛ )_/¯""")
