@@ -24,8 +24,8 @@ cd  Ms.Word-Text-Finder
 pip install -r requirements.txt
 ```
 
+![2](https://user-images.githubusercontent.com/118709832/209482396-c8dc19dc-4374-44a2-9847-4d2dfe9a11c7.png)
 
-![2022-12-22 04_10_39-Select Command Prompt](https://user-images.githubusercontent.com/118709832/209099574-f885e7d9-5928-4852-ab81-8b80558a6f97.png)
 
 
 
