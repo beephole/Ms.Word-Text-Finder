@@ -5,6 +5,8 @@ from tkinter import filedialog
 import docx2pdf
 import openpyxl
 
+print(openpyxl.__version__)
+
 
 template = """
 ___  ___         _    _                   _   _____        _____  ______  _             _             
@@ -641,6 +643,7 @@ def replace_variables(template_file, results, bold, file_type):
             os.getcwd(), "modified_template_{}.xlsx".format(os.getpid())
         )
         doc.save(modified_template)
+    return modified_template
 
 
 if args.template:
